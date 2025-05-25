@@ -1,0 +1,38 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+  // print text
+  printf("Please enter some text: ");
+  char *line = NULL;
+  size_t len = 0;
+
+  // get user input
+  ssize_t num_char = getline(&line, &len, stdin);
+  printf("Output: %s", line);
+
+  // add error handling; getline returns -1 if failed
+  if (num_char == -1) {
+    perror("getline failed");
+    exit(EXIT_FAILURE);
+  }
+
+  // tokenize the input
+  char *saveptr;
+  char *token =
+      strtok_r(line, " ", &saveptr); // on first call, pass in full string
+  printf("Tokens: \n");
+  printf("  %s\n", token);
+  while (token != NULL) { // on subsequent calls, pass in NULL
+    token = strtok_r(NULL, " ", &saveptr);
+    if (token == NULL)
+      break;
+    printf("  %s\n", token);
+  }
+
+  // free up dynamic memory
+  free(line);
+  exit(EXIT_SUCCESS);
+}

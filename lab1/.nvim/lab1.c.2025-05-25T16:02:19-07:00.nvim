@@ -1,0 +1,17 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+  printf("Please enter some text: \n"); 
+  FILE *stream;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t nread;
+
+  nread = getline(&line, &len, stream);
+  printf("Output: %c\n", nread);
+
+  free(line);
+  fclose(stream);
+  return 0;
+}
