@@ -1,0 +1,37 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+int main() {
+  char *input = NULL;
+  char *args;
+  size_t len = 0;
+  int pid;
+
+  while (true) {
+    // get user input
+    printf("Enter programs to run.\n");
+    ssize_t num_char = getline(&input, &len, stdin);
+
+    // error handling
+    if (num_char == -1) {
+      perror("getline failed");
+      exit(EXIT_FAILURE);
+    }
+
+    // create child process
+    pid = fork();
+
+    if (pid != 0) {
+
+    } else {
+      execl(input, args, NULL);
+    }
+    // run exec
+  }
+
+  return 0;
+}

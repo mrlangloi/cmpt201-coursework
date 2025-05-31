@@ -1,0 +1,45 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+int main() {
+  char *input = NULL;
+  size_t len = 0;
+  int pid;
+
+  while (true) {
+    // get user input
+    printf("Enter programs to run.\n");
+    ssize_t num_char = getline(&input, &len, stdin);
+
+    // error handling
+    if (num_char == -1) {
+      perror("getline failed");
+      exit(EXIT_FAILURE);
+    }
+
+    // because getline() include '\n', we can replace it with '\0' instead
+    if (input[num_char - 1] == '\n') {
+      input[num_char - 1] = '\0';
+    }
+
+    // create child process
+    pid = fork();
+
+    if (pid != 0) {
+      // parent waits for child process to finish
+      int wstatus;
+      waitpid(pid, &wstatus, 0);
+    } else {
+      // child runs exec
+      execl(input, input, NULL);
+      perror("Exec failure\n");
+    }
+  }
+
+  return 0;
+}
