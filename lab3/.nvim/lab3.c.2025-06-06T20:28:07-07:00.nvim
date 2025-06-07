@@ -1,0 +1,14 @@
+#include <stdio.h>
+
+int main() {
+
+  char *line;
+  size_t size = 0;
+  
+  while(true) {
+
+    ssize_t len = getline(&line, &size, stdin);
+  }
+
+  return 0;
+}

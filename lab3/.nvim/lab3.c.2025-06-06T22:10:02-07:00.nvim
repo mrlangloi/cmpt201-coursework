@@ -1,0 +1,54 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+const int MAX_ENTRIES = 5;
+const int MAX_LENGTH = 100;
+
+void printInput(char history[][MAX_LENGTH], int savedInputs) {
+  for (int i = 0; i < (savedInputs > MAX_ENTRIES ? MAX_ENTRIES : savedInputs);
+       i++) {
+    printf("%s\n", history[i]);
+  }
+}
+
+int main() {
+  // create line for user input
+  char *line;
+  size_t size = 0;
+
+  // create history of inputs saving up to 5 lines
+  const int MAX_ENTRIES = 5;
+  const int MAX_LENGTH = 100;
+  char history[MAX_ENTRIES][MAX_LENGTH];
+  int savedInputs = 0;
+  int index = 0;
+
+  while (true) {
+    // get user input
+    printf("Enter input: ");
+    ssize_t strlen = getline(&line, &size, stdin);
+
+    // remove the '\n' at the end of input
+    if (line[strlen - 1] == '\n') {
+      line[strlen - 1] = '\0';
+    }
+
+    // save user input to history
+    strncpy(history[index], line, MAX_LENGTH - 1);
+    savedInputs++;
+    index = (index + 1) % MAX_ENTRIES;
+
+    // if the user typed "print", print the last 5 inputs
+    if (strcmp(line, "print") == 0) {
+      printInput(history, savedInputs);
+    }
+
+    // free the memory
+    // free(line);
+  }
+
+  return 0;
+}
