@@ -27,13 +27,6 @@ void print_out(char *format, void *data, size_t data_size) {
   write(STDOUT_FILENO, buf, len);
 }
 
-void print_block(struct header *block, int header_size) {
-  for (int i = header_size; i < EXTRA_SIZE; i++) {
-    uint64_t val = *((char *)block + i);
-    print_out("%d\n", &val, sizeof(&val));
-  }
-}
-
 int main() {
 
   // increase heap size
@@ -67,16 +60,10 @@ int main() {
   memset((void *)block1 + header_size, 0, EXTRA_SIZE - header_size);
   memset((void *)block2 + header_size, 1, EXTRA_SIZE - header_size);
 
-  print_block(block1, header_size);
-
-  // print_out("first block:       %p\n", &block1, sizeof(&block1->size));
-  // print_out("second block:      %p\n", &block2, sizeof(&block2->size));
-  // print_out("first block size:  %d\n", &block1->size, sizeof(&block1->size));
-  // print_out("first block next:  %p\n", &block1->next, sizeof(&block1->next));
-  // print_out("second block size: %d\n", &block2->size, sizeof(&block2->size));
-  // print_out("second block next: %p\n", &block2->next, sizeof(&block2->next));
-
-  print_block(block2, header_size);
+  for (int i = header_size; i < EXTRA_SIZE; i++) {
+    uint64_t value = block1[i];
+    print_out("%d\n", &value, sizeof(uint64_t));
+  }
 
   return 0;
 }
