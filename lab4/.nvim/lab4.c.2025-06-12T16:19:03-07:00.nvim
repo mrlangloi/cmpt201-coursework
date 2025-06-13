@@ -1,0 +1,13 @@
+#define _POSIX_C_SOURCE 200809L
+#include <unistd.h>
+
+int EXTRA_SIZE = 256;
+
+int main() {
+  int waldo = 42;
+
+  // increase heap size
+  int *mem_loc = (int *)sbrk(EXTRA_SIZE);
+
+  return 0;
+}

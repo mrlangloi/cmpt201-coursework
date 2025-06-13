@@ -1,0 +1,71 @@
+#define _GNU_SOURCE
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+int EXTRA_SIZE = 128;
+int BUF_SIZE = 100; // arbitrary value
+
+struct header {
+  uint64_t size;
+  struct header *next;
+};
+
+void print_out(char *format, void *data, size_t data_size) {
+  char buf[BUF_SIZE];
+  ssize_t len = snprintf(buf, BUF_SIZE, format,
+                         data_size == sizeof(uint64_t) ? *(uint64_t *)data
+                                                       : *(void **)data);
+
+  if (len < 0) {
+    char *msg = "snprintf";
+    write(STDOUT_FILENO, msg, strlen(msg));
+    // handle_error("snprintf");
+  }
+
+  write(STDOUT_FILENO, buf, len);
+}
+
+int main() {
+
+  // increase heap size
+  // void *mem_addr = sbrk(EXTRA_SIZE);
+
+  // initialize block 1
+  struct header *block1 = (struct header *)sbrk(EXTRA_SIZE);
+  block1->size = EXTRA_SIZE;
+  block1->next = NULL;
+
+  // initialize block 2
+  struct header *block2 = (struct header *)sbrk(EXTRA_SIZE);
+  block2->size = EXTRA_SIZE;
+  block2->next = block1;
+
+  // print address of each block
+  print_out("first block:       %p\n", &block1, sizeof(&block1->size));
+  print_out("second block:      %p\n", &block2, sizeof(&block2->size));
+
+  // print values in block headers
+  print_out("first block size:  %d\n", &block1->size, sizeof(&block1->size));
+  print_out("first block next:  %p\n", &block1->next, sizeof(&block1->next));
+  print_out("second block size: %d\n", &block2->size, sizeof(&block2->size));
+  print_out("second block next: %p\n", &block2->next, sizeof(&block2->next));
+
+  // print content in each block
+  int header_size = sizeof(struct header);
+  // print_out("size of header:    %d\n", &header_size, sizeof(&header_size));
+
+  // skips the header and fills the remaining (128 - header) bytes with values
+  memset((void *)block1 + header_size, 0, EXTRA_SIZE - header_size);
+  memset((void *)block2 + header_size, 1, EXTRA_SIZE - header_size);
+
+  for (int i = header_size; i < EXTRA_SIZE; i++) {
+    print_out("%d\n", (void *)block1 + i, sizeof((void *)block1 + i));
+  }
+  for (int i = header_size; i < EXTRA_SIZE; i++) {
+    print_out("%d\n", (void *)block2 + i, sizeof((void *)block2 + i));
+  }
+
+  return 0;
+}

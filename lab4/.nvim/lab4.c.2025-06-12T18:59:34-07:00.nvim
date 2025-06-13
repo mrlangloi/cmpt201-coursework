@@ -1,0 +1,77 @@
+#define _GNU_SOURCE
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+int EXTRA_SIZE = 256;
+int BUF_SIZE = 100; // arbitrary value
+
+struct header {
+  uint64_t size;
+  struct header *next;
+};
+
+void print_out(char *format, void *data, size_t data_size) {
+  char buf[BUF_SIZE];
+  ssize_t len = snprintf(buf, BUF_SIZE, format,
+                         data_size == sizeof(uint64_t) ? *(uint64_t *)data
+                                                       : *(void **)data);
+
+  if (len < 0) {
+    char *msg = "snprintf";
+    write(STDOUT_FILENO, msg, strlen(msg));
+    // handle_error("snprintf");
+  }
+
+  write(STDOUT_FILENO, buf, len);
+}
+
+void print_block_data(struct header *block, size_t header_size) {
+  for (int i = header_size; i < EXTRA_SIZE; i++) {
+    void *data = (void *)block + header_size;
+    print_out("Line %d  ", &i, sizeof(&i));
+    print_out("%d\n", data, sizeof(data));
+  }
+}
+
+int main() {
+
+  // increase heap size
+  void *mem_addr = sbrk(EXTRA_SIZE);
+
+  // print_out("Break: %p\n", &mem_addr, sizeof(&mem_addr));
+
+  // initialize block 1
+  struct header *block1 = (struct header *)mem_addr;
+  block1->size = (EXTRA_SIZE / 2);
+  block1->next = NULL;
+
+  // initialize block 2
+  struct header *block2 =
+      (struct header *)((void *)mem_addr + (EXTRA_SIZE / 2));
+  block2->size = (EXTRA_SIZE / 2);
+  block2->next = block1;
+
+  // print address of each block
+  print_out("first block:       %p\n", &block1, sizeof(&block1->size));
+  print_out("second block:      %p\n", &block2, sizeof(&block2->size));
+
+  // print values in block headers
+  print_out("first block size:  %d\n", &block1->size, sizeof(&block1->size));
+  print_out("first block next:  %p\n", &block1->next, sizeof(&block1->next));
+  print_out("second block size: %d\n", &block2->size, sizeof(&block2->size));
+  print_out("second block next: %p\n", &block2->next, sizeof(&block2->next));
+
+  size_t header_size = sizeof(struct header);
+  // print_out("size of header:    %d\n", &header_size, sizeof(&header_size));
+
+  memset((void *)block1 + header_size, 0, 128 - header_size);
+  memset((char *)block2 + header_size, 1, 128 - header_size);
+
+  // print contents of block data
+  print_block_data(block1, header_size);
+  // print_block_data(block2, header_size);
+
+  return 0;
+}

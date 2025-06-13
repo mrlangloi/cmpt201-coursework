@@ -1,0 +1,23 @@
+#define _POSIX_C_SOURCE 200809L
+#include <string.h>
+#include <unistd.h>
+
+int EXTRA_SIZE = 256;
+
+int main() {
+  // int waldo = 42;
+
+  char *message = "Test message";
+  write(STDOUT_FILENO, message, strlen(message));
+
+  // increase heap size
+  // int *mem_loc = (int *)sbrk(EXTRA_SIZE);
+
+  // initialize block 1
+
+  // initialize block 2
+
+  // print
+
+  return 0;
+}
