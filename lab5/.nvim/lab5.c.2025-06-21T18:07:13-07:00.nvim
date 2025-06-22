@@ -129,14 +129,15 @@ int main(void) {
 }
 
 /*
- *  loop from start to end of the memory segment:
+ *  loop from start to end of the memory segment
  *    if current block is free:
- *      if current address + current size (i.e. the next block) is free:
- *        merge with next block
- *        update current size
- *        continue
- *    proceed to next block, current block = current address + current size
+ *      if current address + current size (i.e. the next block) is free: 
+ *        merge with next block 
+ *        update current size 
+ *        continue 
+ *    proceed to the next block, current block = current address + current size
  *
  * this algorithm should merge free blocks that are adjacent to each other
- * although it traverses through used blocks, it does not alter their data
+ * although it traverses through used blocks, it does not alter any of their
+ * data
  */
