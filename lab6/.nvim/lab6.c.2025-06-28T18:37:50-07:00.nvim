@@ -1,0 +1,84 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+
+typedef struct node {
+  uint64_t data;
+  struct node *next;
+} node_t;
+
+// example_1.c
+void insert_sorted(uint64_t data) {
+  node_t *new_node = malloc(sizeof(node_t));
+  new_node->data = data;
+  new_node->next = NULL;
+
+  if (head == NULL) {
+    head = new_node;
+  } else {
+    node_t *curr = head;
+    node_t *prev = NULL;
+
+    bool inserted = false;
+    if (data < curr->data) {
+      head = new_node;
+      new_node->next = curr;
+      inserted = true;
+    }
+    while (curr != NULL && !inserted) {
+      if (data < curr->data) {
+        prev->next = new_node;
+        new_node->next = curr;
+        inserted = true;
+      }
+      prev = curr;
+      curr = curr->next;
+    }
+    if (!inserted) {
+      prev->next = new_node;
+    }
+  }
+}
+
+// example_2.c
+#define ASSERT(expr)                                                           \
+  {                                                                            \
+    if (!(expr)) {                                                             \
+      fprintf(stderr, "File: %s\n", __FILE__);                                 \
+      fprintf(stderr, "Line: %d\n", __LINE__);                                 \
+      fprintf(stderr, "Assertion failed: %s\n", #expr);                        \
+      exit(1);                                                                 \
+    }                                                                          \
+  }
+
+void insert_sorted(uint64_t data) {
+  node_t *new_node = malloc(sizeof(node_t));
+  new_node->data = data;
+  new_node->next = NULL;
+
+  if (head == NULL) {
+    head = new_node;
+  } else if (data < head->data) {
+    new_node->next = head;
+    head = new_node;
+  } else {
+    node_t *curr = head;
+    node_t *prev = NULL;
+
+    while (curr != NULL) {
+      if (data < curr->data) {
+        break;
+      }
+
+      prev = curr;
+      curr = curr->next;
+    }
+
+    prev->next = new_node;
+    if (curr != NULL) {
+      new_node->next = curr;
+    }
+  }
+
+  info.sum += data;
+}
