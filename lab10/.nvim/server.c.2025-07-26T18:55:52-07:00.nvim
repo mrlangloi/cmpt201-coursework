@@ -5,25 +5,17 @@ Understanding the Client:
 1. How is the client sending data to the server? What protocol?
 The client is sending data to the server via writing to the file descriptor that
 the server established for communication. The protocol being used is TCP.
-
 2. What data is the client sending to the server?
-The data that the client sends to the server are the strings "Hello", "Apple",
-"Car", "Green", and "Dog".
-
 Understanding the Server:
 1. Explain the argument that the `run_acceptor` thread is passed as an argument.
-The argument that is passed to run_acceptor() contains the flag to indicate
-whether the server and clients should continue running, the shared data
-structure to contain the messages, and the mutex to prevent thread issues like
-data race.
-
+The argument that is passed to run_acceptor() contains the flag to indicate whether the program
+should continue running, the shared data structure to contain the messages, and the mutex to prevent
+thread issues like data race.
 2. How are received messages stored?
 Received messages are stored in a linked list.
-
 3. What does `main()` do with the received messages?
 main() waits until it collects 20 messages before printing it all onto the
 terminal.
-
 4. How are threads used in this sample code?
 We have the main thread that waits until 20 messages are collected, one thread
 to initialize the socket and accept incoming connections, and one thread per
